@@ -1,5 +1,31 @@
-type ExampleEntity @entity {
+type Post @entity {
   id: ID!
-  block: Bytes!
-  count: BigInt!
+  accountId: String!
+  blockHeight: BigInt!
+  receiptId: String!
+  content: String!
+  blockTimestamp: BigInt!
+  accountsLiked: [String!]!
+  lastCommentTimestamp: BigInt
+  comments: [Comment!]! @derivedFrom(field: "post")
+  postLikes: [PostLike!]! @derivedFrom(field: "post")
+}
+
+type Comment @entity {
+  id: ID!
+  post: Post!
+  accountId: String!
+  blockHeight: BigInt!
+  content: String!
+  blockTimestamp: BigInt!
+  receiptId: String!
+}
+
+type PostLike @entity {
+  id: ID!
+  post: Post!
+  accountId: String!
+  blockHeight: BigInt
+  blockTimestamp: BigInt!
+  receiptId: String!
 }

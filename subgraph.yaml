@@ -1,17 +1,22 @@
-specVersion: 0.0.5
+specVersion: 0.0.4
 schema:
-  file: ./schema.graphql
+  file: ./schema.graphql # link to the schema file
 dataSources:
   - kind: near
-    name: Contract
+    name: near-test
     network: near-mainnet
     source:
-      account: "morgs.near"
+      account: social.near # This data source will monitor this account
+      startBlock: 93608050 # Required for NEAR
     mapping:
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - ExampleEntity
+        - Post
+        - Comment
+        - PostLike
+      blockHandlers:
+        - handler: handleNewBlock # the function name in the mapping file
       receiptHandlers:
-        - handler: handleReceipt
-      file: ./src/contract.ts
+        - handler: handleReceipt # the function name in the mapping file
+      file: ./src/mapping.ts # link to the file with the Assemblyscript mappings
