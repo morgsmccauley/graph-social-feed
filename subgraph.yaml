@@ -15,8 +15,8 @@ dataSources:
         - Post
         - Comment
         - PostLike
-      blockHandlers:
-        - handler: handleNewBlock # the function name in the mapping file
+      # blockHandlers:
+      #   - handler: handleBlock # the function name in the mapping file
       receiptHandlers:
         - handler: handleReceipt # the function name in the mapping file
       file: ./src/mapping.ts # link to the file with the Assemblyscript mappings

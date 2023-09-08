@@ -5,8 +5,8 @@ type Post @entity {
   receiptId: String!
   content: String!
   blockTimestamp: BigInt!
-  accountsLiked: [String!]!
-  lastCommentTimestamp: BigInt
+  # accountsLiked: [String!]!
+  # lastCommentTimestamp: Int
   comments: [Comment!]! @derivedFrom(field: "post")
   postLikes: [PostLike!]! @derivedFrom(field: "post")
 }
