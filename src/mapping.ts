@@ -51,15 +51,41 @@ export function handleReceipt(
 
         const comment = post.toObject().get("comment");
         if (comment) {
-          log.info("Found comment for account: {}, {}", [accountId, comment.toString()])
+          const parentItem = json
+            .fromString(comment.toString())
+            .toObject()
+            .mustGet("item")
+            .toObject()
+          const parentType = parentItem
+            .mustGet("type")
+            .toString()
 
-          const newComment = new Comment(accountId + receipt.block.header.height.toString() + "comment");
-          newComment.accountId = accountId;
-          newComment.blockHeight = BigInt.fromU64(receipt.block.header.height);
-          newComment.receiptId = receipt.receipt.id.toHex();
-          newComment.blockTimestamp = BigInt.fromU64(receipt.block.header.timestampNanosec);
-          newComment.content = comment.toString();
-          newComment.save();
+          log.info("Comment: {}", [comment.toString()]);
+          if (parentType == "social") {
+            const parentItemBlockHeight = parentItem
+              .mustGet("blockHeight")
+              .toBigInt();
+            const parentItemAccountId = parentItem
+              .mustGet("path")
+              .toString()
+              .split("/")[0];
+
+            log.info("Saving comment for account: {}, parent post: {}, parent post height: {}", [accountId, parentItemAccountId, parentItemBlockHeight.toString()])
+
+            const parentPost = Post.load(parentItemAccountId + parentItemBlockHeight.toString() + "post")
+            if (parentPost) {
+              log.info("Found parent post: {}", [parentPost.content])
+
+              const newComment = new Comment(accountId + receipt.block.header.height.toString() + "comment");
+              newComment.accountId = accountId;
+              newComment.blockHeight = BigInt.fromU64(receipt.block.header.height);
+              newComment.receiptId = receipt.receipt.id.toHex();
+              newComment.blockTimestamp = BigInt.fromU64(receipt.block.header.timestampNanosec);
+              newComment.content = comment.toString();
+              newComment.post = parentPost.id;
+              newComment.save();
+            }
+          }
         }
       }
 
