@@ -8,7 +8,7 @@ type Post @entity {
   # accountsLiked: [String!]!
   # lastCommentTimestamp: Int
   comments: [Comment!]! @derivedFrom(field: "post")
-  postLikes: [PostLike!]! @derivedFrom(field: "post")
+  likes: [Like!]! @derivedFrom(field: "post")
 }
 
 type Comment @entity {
@@ -21,7 +21,7 @@ type Comment @entity {
   receiptId: String!
 }
 
-type PostLike @entity {
+type Like @entity {
   id: ID!
   post: Post!
   accountId: String!

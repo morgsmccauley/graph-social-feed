@@ -1,5 +1,5 @@
 import { near, log, json, BigInt } from "@graphprotocol/graph-ts"
-import { Comment, Post } from '../generated/schema'
+import { Comment, Post, Like } from '../generated/schema'
 
 export function handleReceipt(
   receipt: near.ReceiptWithOutcome
@@ -93,7 +93,28 @@ export function handleReceipt(
       if (index) {
         const like = index.toObject().get("like");
         if (like) {
-          log.info("Found like for account: {}", [accountId])
+          const parentItem = json
+            .fromString(like.toString())
+            .toObject()
+            .mustGet("key")
+            .toObject()
+          const parentItemAccountId = parentItem
+            .mustGet("path")
+            .toString()
+            .split("/")[0];
+          const parentItemBlockHeight = parentItem
+            .mustGet("blockHeight")
+            .toBigInt();
+
+          log.info("Saving like for account: {}, parent post: {}, parent post height: {}", [accountId, parentItemAccountId, parentItemBlockHeight.toString()])
+
+          const newLike = new Like(accountId + receipt.block.header.height.toString() + "like");
+          newLike.post = parentItemAccountId + parentItemBlockHeight.toString() + "post";
+          newLike.accountId = accountId;
+          newLike.blockHeight = BigInt.fromU64(receipt.block.header.height);
+          newLike.blockTimestamp = BigInt.fromU64(receipt.block.header.timestampNanosec);
+          newLike.receiptId = receipt.receipt.id.toHex();
+          newLike.save()
         }
       }
     }
