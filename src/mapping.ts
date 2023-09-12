@@ -1,4 +1,4 @@
-import { near, log, json, BigInt } from "@graphprotocol/graph-ts"
+import { near, log, json, BigInt, JSONValueKind } from "@graphprotocol/graph-ts"
 import { Comment, Post, Like } from '../generated/schema'
 
 export function handleReceipt(
@@ -90,7 +90,7 @@ export function handleReceipt(
       }
 
       const index = accountData.toObject().get("index");
-      if (index) {
+      if (index && index.kind == JSONValueKind.OBJECT) {
         const like = index.toObject().get("like");
         if (like) {
           const parentItem = json
